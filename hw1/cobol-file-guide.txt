@@ -1,0 +1,213 @@
+File.
+
+===============================================================================================================================================================================================
+
+Following are the basic terms -
+
+    - Field
+    - Record
+    - Physical Record
+    - Logical Record
+    - File
+
+Following example helps in understanding these terms -
+
+    01 STUDENT-MARKSHEET.
+       05 STUDENT-ID PIC 9(3).
+       05 NAME PIC A(10).
+       05 MARKS PIC 9(3).
+       05 TOTAL-MARKS PIC 9(3).
+       05 PERCENTAGE PIC 9(3).
+
+
+                            FIELD
+
+
+                STUDENTID   NAME    MARKS   TOTALMARKS    PERCENTAGE
+                100         Jo      400     500           80
+                101         Min     450     500           90
+                102         Jean    350     600           70
+
+
+*** Field ***
+    
+    - Field is used to indicate the data stored about an element. It represents a single element as shown in the above such as id, name ,marks, total marks, and score.
+    
+    - Atrributes
+        
+        Primary keys   : those are unique to each record and are used to identify a particular record. In above example, id is primary key
+        Secondary keys : those are unique or non-unique fields that are used to search for related data. In above example, full name of student can be used as secondary key when id in not known.
+        Descriptos     : fields are used to describe an entity. In above example, marks and percentage fields that add meaning to the record are known descriptors.
+
+*** Record ***
+
+    - Record is a collection of fields that is used to describe an entity. One or more fields together form a record. In above example, id, name, marks, totalmarks, percentage form one record.
+
+    - types
+        
+        Physical Record : It is the information that exists on the external device. It is also known as a block.
+        Logical Record  : Logical record is the information used by the program. In COBOL, only one record can be handled at any point of time and it is called as logical record.
+
+*** File ***
+
+    - File is a collection of related records.
+
+
+===============================================================================================================================================================================================
+
+
+File organization indicates how the records are organized in a file. There are different types of organizations for files so as to increase their efficiency of accessing the records.
+Following are the types of file organization schemes - 
+    
+    - Sequential file
+    - Indexed sequential file
+    - Relative file
+
+
+*** Sequential file ***
+
+    - A sequential file consists of records that are stored and accessed in sequential order.
+
+    - Attributes
+
+        1. Records can be read in sequential order. For reading the 10th record, all the previous 9 records should be read.
+        2. Records are written in sequential order. A new record cannot be inserted in between. always inserted at the end of the file.
+        3. After placing a record into a sequential file, it is not possible to delete, shroten, or lengthen a record.
+        4. Order of the records, once inserted, can never be changed.
+        5. Updation of record is possible. A record can be overwritten, if the new record length is same as the old record length.
+        6. Sequential output files are good option for printing.
+
+    - Syntax
+        
+        INPUT-OUTPUT SECTION.
+        FILE-CONTROL.
+           SELECT file-name ASSIGN TO dd-name-jcl
+           ORGANIZATION IS SEQUENTIAL
+
+
+           
+*** Indexed Sequential File ***
+
+    - Indexed Sequential file consists of records that can be accessed sequentially. Direct access is also possible.
+
+    - Components
+        
+        Data file  : contains records in sequential scheme.
+        Index file : contains the primary key and its address in the data file.
+
+    - Attributes
+
+        1. Records can be read in sequential order just like in sequential file organization.
+        2. Records can be accessed randomly if the primary key in known. Inex file is used to get the address of a record and then the record is fetched from the data file.
+        3. Sorted index is maintained in this file system which relates the key value to the position of the record in the file.
+        4. Alternate index can also be created to fetch the records.
+
+    - Syntax
+        
+        INPUT-OUTPUT SECTION.
+        FILE-CONTROL.
+           SELECT file-name ASSIGN TO dd-name-jcl
+            ORGANIZATION IS INDEXED
+            RECORD KEY IS primary-key
+            ALTERNATE RECORD KEY IS rec-key
+
+
+
+
+*** Relative File ***
+    
+    - A relative file consists of records ordered by their relative address.
+
+    - Attributes
+        
+        1. Records can be read in sequential order just like in sequential and indexed file organization.
+        2. Records can be accessed using relative key. Relative key represents the record’s location relative to the address of the start of the file.
+        3. Records can be inserted using relative key. Relative address is calculated using relative key.
+        4. Relative file provides the fastest access to the records.
+        5. The main disadvantage of this file system is that if some intermediate records are missing, they will also occupy space.
+
+    - Syntax
+
+        INPUT-OUTPUT SECTION.
+        FILE-CONTROL.
+           SELECT file-name ASSIGN TO dd-name-jcl
+           ORGANIZATION IS RELATIVE
+           RELATIVE KEY IS rec-key
+
+===============================================================================================================================================================================================
+
+File handling verbs are used to perform various operations on files including reading, writing, extending and so on.
+
+Following are the file handling verbs -
+
+    - open
+    - read
+    - write
+    - rewrite
+    - delete
+    - start
+    - close
+
+
+*** Open Verb ***
+
+    - Open is the first file operation that must be performed. If Open is successful, then only further operations are possible on that file.
+     
+    - Syntax
+        
+        OPEN "mode" file-name.
+    
+    - mode
+        
+        Input  : It is used for existing files. In this mode, we can only read the file, no other operations are allowed on the file.
+        Output : It is used to insert records in files. If the object is sequential file, the file is holding some records, then the existing records will be deleted first and then new records will be inserted in the file.
+                 If the object is indexed or relative file, it will not happend
+        Extend : It is used to append records in a sequential file. records which we try to insert are inserted at the end. If file access mode in Random or Dynamic, then extend mode cannot be used.
+        I-O    : It is used to read and rewrite the records of a file.
+
+
+*** Read Verb ***
+
+    - Read is used to read the file records. At each read verb, only one record can be read into the file structure. To perform a read, open the file in INPUT or I-O mode.
+
+    - Syntax
+
+        READ file-name NEXT RECORD INTO ws-file-structure
+           AT END DISPLAY 'End of File'
+           NOT AT END DISPLAY 'Record Details:' ws-file-structure
+        END-READ
+
+
+*** Write Verb ***
+
+    - Write verb is used to insert records in a file. Once the record is written, it is no longer available in the record buffer. so we have to move the values into the record buffer to insert record with write verb. then perform write verb.
+    - Write statement can be used with FROM option to directly write records from the working storage variables. It is optional.
+    - If the access mode is sequential, then to write a record, the file must open in Output or Extend mode.
+    - If the access mode is random or dynamic, the file must open in Output or I-O mode.
+
+    - Syntax
+        
+        WRITE record-buffer [FROM ws-file-structure]
+        END-WRITE.
+
+
+*** Rewrite Verb ***
+
+    - Rewrite verb is used to update the records. File should be opened in I-O mode for rewrite operations. Rewrite verb overwrites the last record read.
+
+    - Syntax
+
+        REWRITE record-buffer [FROM ws-file-structure]
+        END-REWRITE.
+
+
+*** Close Verb ***
+
+    - Syntax
+        
+        CLOSE file-name.
+
+
+
+
+refer = https://www.tutorialspoint.com/cobol/cobol_file_handling_verbs.htm
